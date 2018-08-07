@@ -36,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
     List<String> value = new ArrayList<String>();
     List<String> Links;
     List<String> Urls_Links = new ArrayList<String>();
-    ArrayAdapter<String> adapter;
+    //ArrayAdapter<String> adapter;
     ListView listview;
     int itemPosition;
+    CustomListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +50,22 @@ public class MainActivity extends AppCompatActivity {
         IP = (EditText) findViewById(R.id.text3);
         Ok = (Button) findViewById(R.id.Ok);
 
-        adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, value);
+        //adapter = new ArrayAdapter<String>(this,
+                //android.R.layout.simple_list_item_1, android.R.id.text1, value);
+        String[] itemname ={
+                "Safari",
+                "Camera",
+                "Global",
+                "FireFox",
+                "UC Browser",
+                "Android Folder",
+                "VLC Player",
+                "Cold War"
+        };
+        Integer[] itemname2 ={5,5,2
+        };
+        adapter = new CustomListAdapter(this,itemname, itemname2);
+
 
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {

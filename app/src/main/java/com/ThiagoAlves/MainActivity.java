@@ -1,5 +1,6 @@
 package com.ThiagoAlves;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,11 +19,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import android.support.v7.widget.CardView;
 
 public class MainActivity extends AppCompatActivity {
     EditText Text,IP;
@@ -33,42 +37,35 @@ public class MainActivity extends AppCompatActivity {
     Button Ok;
     Thread t;
     List<String> separador;
-    List<String> value = new ArrayList<String>();
+    String elem2;
+    Boolean verificador = false;
+    //List<String> value = new ArrayList<String>();
     List<String> Links;
     List<String> Urls_Links = new ArrayList<String>();
-    //ArrayAdapter<String> adapter;
-    ListView listview;
+   // ArrayAdapter<String> adapter;
+
+    List<CardView> value;
+    CardsAdapter adapter;
+
+    ListView lvCards;
     int itemPosition;
-    CustomListAdapter adapter;
+    //CustomListAdapter adapter;
+    final Integer[] itemname2 ={
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listview  = (ListView) findViewById(R.id.list);
-        Text = (EditText) findViewById(R.id.Text);
-        IP = (EditText) findViewById(R.id.text3);
-        Ok = (Button) findViewById(R.id.Ok);
 
-        //adapter = new ArrayAdapter<String>(this,
-                //android.R.layout.simple_list_item_1, android.R.id.text1, value);
-        String[] itemname ={
-                "Safari",
-                "Camera",
-                "Global",
-                "FireFox",
-                "UC Browser",
-                "Android Folder",
-                "VLC Player",
-                "Cold War"
-        };
-        Integer[] itemname2 ={5,5,2
-        };
-        adapter = new CustomListAdapter(this,itemname, itemname2);
+        Text = findViewById(R.id.Text);
+        IP =  findViewById(R.id.text3);
+        Ok =  findViewById(R.id.Ok);
+        lvCards =  findViewById(R.id.list);
 
-
-        listview.setAdapter(adapter);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        adapter = new CardsAdapter(this);
+        lvCards.setAdapter(adapter);
+        lvCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -77,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 // ListView Clicked item index
                 itemPosition = position;
 
-                // ListView Clicked item value
-                String  itemValue    = (String) listview.getItemAtPosition(position);
                 Thread EnviarIndexVideo = new Thread(new Runnable() {
                     public void run() {
                         try {
@@ -88,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                             writer.flush();
                             writer.close();
                             soc5.close();
-                            Toast.makeText(getApplicationContext(),"Video Solicitado :"+itemPosition , Toast.LENGTH_LONG)
+                            Toast.makeText(getApplicationContext(),"Video Solicitado :"+itemPosition , Toast.LENGTH_SHORT)
                                     .show();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -97,8 +92,10 @@ public class MainActivity extends AppCompatActivity {
                 EnviarIndexVideo.start();
 
                 // Show Alert
-                Toast.makeText(getApplicationContext(),"Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                Toast.makeText(getApplicationContext(),"Position :"+itemPosition+"  ListItem : " , Toast.LENGTH_SHORT)
                         .show();
+
+
 
             }
 
@@ -137,17 +134,6 @@ public class MainActivity extends AppCompatActivity {
                         } catch(Exception e){
                             e.printStackTrace();
                         }
-                        try {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //msg = s;
-                                    System.out.println(msg);
-                                }
-                            });
-                        }   catch(Exception e){
-                            e.printStackTrace();
-                        }
                         try{
                             writer = new PrintWriter(soc.getOutputStream());
                             writer.write(msg);
@@ -181,53 +167,57 @@ public class MainActivity extends AppCompatActivity {
                             soc2.close();
 
                             try{ Thread.sleep(1000);} catch (Exception e){}
+
                             Thread OK2 = new Thread(new Runnable() {
                                 public void run() {
                                     List<String> titles = new ArrayList<String>();
-                                    while (true) {
-                                        try {
-                                            Socket soc2 = new Socket(ip, 7879);
-                                            InputStream is = soc2.getInputStream();
-                                            InputStreamReader isr = new InputStreamReader(is,"windows-1252");
-                                            BufferedReader br = new BufferedReader(isr);
-                                            String message = br.readLine();
-                                            Log.e("Ue", message);
-                                            separador = Arrays.asList(message.split(";"));
-                                            for(String elem : separador) {
-                                                if (!elem.equals("")) {
-                                                    value.add(elem);
-                                                }
-                                            }
+                                    while (!verificador) {
+                                    try {
 
-                                           /*message = br.readLine();
-                                            Links = Arrays.asList(message.split(";"));
-                                            for(String elem : Links) {
-                                                if (!elem.equals("")) {
-                                                    Urls_Links.add(elem);
-                                                }
-                                            }
-*/
+                                        Log.e("MyApp","Entrei");
+                                        Socket soc2 = new Socket(ip, 7879);
+                                        InputStream is = soc2.getInputStream();
+                                        InputStreamReader isr = new InputStreamReader(is,"utf-8");
+                                        BufferedReader br = new BufferedReader(isr);
+                                        String message = br.readLine();
+                                        Log.e("MyApp", message);
+                                        separador = Arrays.asList(message.split(";"));
+                                        soc2.close();
+                                        verificador = true;
 
-                                            Log.e("Ue", message);
-                                            soc2.close();
-                                            break;
-                                        } catch (Exception e) {
-                                        }
+                                    } catch (Exception e) {
+                                        StringWriter errors = new StringWriter();
+                                        e.printStackTrace(new PrintWriter(errors));
+                                        Log.e("MyApp",errors.toString());
                                     }
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    });
+                                        Log.e("MyApp", "Cabo");
+                                    }
 
 
+
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                for(String elem : separador) {
+                                                    elem2 = elem;
+                                                    if (!elem.equals("")) {
+                                                        adapter.add(new CardModel(0, elem2, "Teste"));
+                                                        Log.e("MyApp", elem);
+                                                    }
+                                                }
+                                            }});
+
+                                    Log.e("MyApp","Botei e sai");
                                 }
                             });
                             OK2.start();
 
-
-                            soc.close();
+                            try {
+                                soc.close();
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                         } catch (UnknownHostException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();

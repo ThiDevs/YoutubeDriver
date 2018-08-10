@@ -5,17 +5,17 @@ package com.ThiagoAlves;
  */
 
 public class CardModel {
-    private int imageId;
+    private String imageId;
     private String titleId;
     private String subtitleId;
 
-    public CardModel(int imageId, String titleId, String subtitleId) {
+    public CardModel(String imageId, String titleId, String subtitleId) {
         this.imageId = imageId;
         this.titleId = titleId;
         this.subtitleId = subtitleId;
     }
 
-    public int getImageId() {
+    public String getImageId() {
         return imageId;
     }
 

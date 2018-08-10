@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     Button Ok;
     Thread t;
     List<String> separador;
+    List<String> thumbs;
     String elem2;
     Boolean verificador = false;
     //List<String> value = new ArrayList<String>();
@@ -180,35 +181,37 @@ public class MainActivity extends AppCompatActivity {
                                         InputStreamReader isr = new InputStreamReader(is,"utf-8");
                                         BufferedReader br = new BufferedReader(isr);
                                         String message = br.readLine();
-                                        Log.e("MyApp", message);
+                                        Log.d("MyApp", "Titles:" + message);
                                         separador = Arrays.asList(message.split(";"));
-                                        soc2.close();
+                                        message = br.readLine();
+                                        thumbs = Arrays.asList(message.split(";"));
+                                        Log.d("MyApp", "Imagens:" + message);
+
                                         verificador = true;
+
+                                        soc2.close();
 
                                     } catch (Exception e) {
                                         StringWriter errors = new StringWriter();
                                         e.printStackTrace(new PrintWriter(errors));
                                         Log.e("MyApp",errors.toString());
                                     }
-                                        Log.e("MyApp", "Cabo");
                                     }
-
-
-
 
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
+                                                int i = 0;
                                                 for(String elem : separador) {
                                                     elem2 = elem;
                                                     if (!elem.equals("")) {
-                                                        adapter.add(new CardModel(0, elem2, "Teste"));
+                                                        adapter.add(new CardModel(thumbs.get(i), elem2, ""));
                                                         Log.e("MyApp", elem);
                                                     }
+                                                    i++;
                                                 }
                                             }});
 
-                                    Log.e("MyApp","Botei e sai");
                                 }
                             });
                             OK2.start();

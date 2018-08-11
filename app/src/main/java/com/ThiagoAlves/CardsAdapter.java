@@ -47,34 +47,32 @@ public class CardsAdapter extends ArrayAdapter<CardModel> {
         new DownloadImageTask(holder.imageView)
                 .execute(model.getImageId());
 
-
-
         holder.tvTitle.setText(model.getTitle());
         holder.tvSubtitle.setText(model.getSubtitle());
+        holder.tvChannel.setText(model.getChannel());
+        holder.tvData.setText(model.getDataYT());
+
+
 
         return convertView;
-    }
-
-    public int onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-
-        return pos;
-
-
     }
 
     class ViewHolder {
         ImageView imageView;
         TextView tvTitle;
         TextView tvSubtitle;
+        TextView tvChannel;
+        TextView tvData;
 
         ViewHolder(View view) {
+
             imageView = (ImageView) view.findViewById(R.id.image);
-            new DownloadImageTask(imageView)
-                    .execute("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png");
-
-
             tvTitle = (TextView) view.findViewById(R.id.text_title);
             tvSubtitle = (TextView) view.findViewById(R.id.text_subtitle);
+            tvChannel = (TextView) view.findViewById(R.id.text_channel);
+            tvData = (TextView) view.findViewById(R.id.text_data);
+
+
         }
     }
 

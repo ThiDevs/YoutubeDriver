@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     Thread t;
     List<String> separador;
     List<String> thumbs;
+    List<String> desc;
+    List<String> channel;
+    List<String> datayt;
     String elem2;
     Boolean verificador = false;
     //List<String> value = new ArrayList<String>();
@@ -180,12 +183,21 @@ public class MainActivity extends AppCompatActivity {
                                         InputStream is = soc2.getInputStream();
                                         InputStreamReader isr = new InputStreamReader(is,"utf-8");
                                         BufferedReader br = new BufferedReader(isr);
+
                                         String message = br.readLine();
-                                        Log.d("MyApp", "Titles:" + message);
                                         separador = Arrays.asList(message.split(";"));
+
                                         message = br.readLine();
                                         thumbs = Arrays.asList(message.split(";"));
-                                        Log.d("MyApp", "Imagens:" + message);
+
+                                        message = br.readLine();
+                                        desc = Arrays.asList(message.split(";"));
+
+                                        message = br.readLine();
+                                        channel = Arrays.asList(message.split(";"));
+
+                                        message = br.readLine();
+                                        datayt = Arrays.asList(message.split(";"));
 
                                         verificador = true;
 
@@ -201,16 +213,25 @@ public class MainActivity extends AppCompatActivity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
+                                                try{
                                                 int i = 0;
-                                                for(String elem : separador) {
-                                                    elem2 = elem;
-                                                    if (!elem.equals("")) {
-                                                        adapter.add(new CardModel(thumbs.get(i), elem2, ""));
-                                                        Log.e("MyApp", elem);
+                                                for(String Title : separador) {
+                                                    String Thumb = thumbs.get(i);
+                                                    String Desc = desc.get(i);
+                                                    String Channel = channel.get(i);
+                                                    String Metadata =  datayt.get(i);
+
+                                                    if (!Title.equals("")) {
+                                                        adapter.add(new CardModel(Thumb, Title, Desc,Channel,Metadata));
+                                                        Log.e("MyApp", Title);
                                                     }
                                                     i++;
                                                 }
+                                                } catch(Exception e){
+                                                    e.printStackTrace();
+                                                }
                                             }});
+
 
                                 }
                             });

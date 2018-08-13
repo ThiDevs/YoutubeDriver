@@ -47,16 +47,8 @@ public class MainActivity extends AppCompatActivity {
     List<String> desc;
     List<String> channel;
     List<String> datayt;
-    String elem2;
     Boolean verificador = false;
-    //List<String> value = new ArrayList<String>();
-    List<String> Links;
-    List<String> Urls_Links = new ArrayList<String>();
-   // ArrayAdapter<String> adapter;
-
-    List<CardView> value;
     CardsAdapter adapter;
-
     ListView lvCards;
     int itemPosition;
     private InterstitialAd mInterstitialAd;
@@ -73,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         adView.loadAd(adRequest);
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-4653575622321119/2673683815");
+        mInterstitialAd.setAdUnitId("ca-app-pub-4653575622321119/5751149581");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
 
@@ -113,6 +105,12 @@ public class MainActivity extends AppCompatActivity {
                 // Show Alert
                 Toast.makeText(getApplicationContext(),"Position :"+itemPosition+"  ListItem : " , Toast.LENGTH_SHORT)
                         .show();
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG2", "The interstitial wasn't loaded yet.");
+                }
 
 
 
@@ -235,9 +233,6 @@ public class MainActivity extends AppCompatActivity {
                                         soc2.close();
 
                                     } catch (Exception e) {
-                                        StringWriter errors = new StringWriter();
-                                        e.printStackTrace(new PrintWriter(errors));
-                                        Log.e("MyApp",errors.toString());
                                     }
                                     }
 
@@ -296,11 +291,7 @@ public class MainActivity extends AppCompatActivity {
                     }});
 
                 OK.start();
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                } else {
-                    Log.d("TAG2", "The interstitial wasn't loaded yet.");
-                }
+
 
 
             }

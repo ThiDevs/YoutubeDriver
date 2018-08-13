@@ -28,6 +28,12 @@ import java.util.List;
 
 import android.support.v7.widget.CardView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
 public class MainActivity extends AppCompatActivity {
     EditText Text,IP;
     String msg = "";
@@ -53,14 +59,23 @@ public class MainActivity extends AppCompatActivity {
 
     ListView lvCards;
     int itemPosition;
-    //CustomListAdapter adapter;
-    final Integer[] itemname2 ={
-    };
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MobileAds.initialize(this, "ca-app-pub-4653575622321119~5903741568");
+
+        AdView adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-4653575622321119/2673683815");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
 
         Text = findViewById(R.id.Text);
         IP =  findViewById(R.id.text3);
@@ -281,6 +296,11 @@ public class MainActivity extends AppCompatActivity {
                     }});
 
                 OK.start();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG2", "The interstitial wasn't loaded yet.");
+                }
 
 
             }

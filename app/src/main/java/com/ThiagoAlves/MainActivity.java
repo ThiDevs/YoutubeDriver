@@ -174,11 +174,27 @@ public class MainActivity extends AppCompatActivity {
 
                             Thread OK2 = new Thread(new Runnable() {
                                 public void run() {
-                                    List<String> titles = new ArrayList<String>();
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    adapter.clear();
+                                                } catch (Exception e ){
+                                                    StringWriter errors = new StringWriter();
+                                                    e.printStackTrace(new PrintWriter(errors));
+                                                    Log.d("MyApp",errors.toString());
+
+                                                }
+
+
+                                                verificador = false;
+                                            }
+                                        });
+
                                     while (!verificador) {
                                     try {
 
-                                        Log.e("MyApp","Entrei");
                                         Socket soc2 = new Socket(ip, 7879);
                                         InputStream is = soc2.getInputStream();
                                         InputStreamReader isr = new InputStreamReader(is,"utf-8");
@@ -223,13 +239,26 @@ public class MainActivity extends AppCompatActivity {
 
                                                     if (!Title.equals("")) {
                                                         adapter.add(new CardModel(Thumb, Title, Desc,Channel,Metadata));
-                                                        Log.e("MyApp", Title);
                                                     }
                                                     i++;
                                                 }
                                                 } catch(Exception e){
                                                     e.printStackTrace();
                                                 }
+
+                                                try {
+                                                    separador.clear();
+                                                    thumbs.clear();
+                                                    desc.clear();
+                                                    channel.clear();
+                                                    datayt.clear();
+                                                } catch (Exception e){
+                                                    StringWriter errors = new StringWriter();
+                                                    e.printStackTrace(new PrintWriter(errors));
+                                                    Log.d("MyApp",errors.toString());
+                                                }
+
+
                                             }});
 
 

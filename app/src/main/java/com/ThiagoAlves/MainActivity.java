@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
+        Search Pesquisa = new Search("Raplord");
+
+
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-4653575622321119/5751149581");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());

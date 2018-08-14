@@ -47,8 +47,12 @@ public class MainActivity extends AppCompatActivity {
     List<String> desc;
     List<String> channel;
     List<String> datayt;
+
     Boolean verificador = false;
+
     CardsAdapter adapter;
+    ListView listView;
+
     ListView lvCards;
     int itemPosition;
     private InterstitialAd mInterstitialAd;
@@ -183,29 +187,23 @@ public class MainActivity extends AppCompatActivity {
                             writer.close();
                             soc2.close();
 
-                            try{ Thread.sleep(1000);} catch (Exception e){}
 
                             Thread OK2 = new Thread(new Runnable() {
                                 public void run() {
-
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    adapter.clear();
-                                                } catch (Exception e ){
-                                                    StringWriter errors = new StringWriter();
-                                                    e.printStackTrace(new PrintWriter(errors));
-                                                    Log.d("MyApp",errors.toString());
-
-                                                }
-
-
-                                                verificador = false;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                setAdapter();
+                                                lvCards.setAdapter(null);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
-                                        });
-
+                                        }
+                                    });
+                                    try{ t.sleep(1000);}catch (Exception e){}
                                     while (!verificador) {
+
                                     try {
 
                                         Socket soc2 = new Socket(ip, 7879);
@@ -240,32 +238,43 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void run() {
                                                 try{
-                                                int i = 0;
-                                                for(String Title : separador) {
-                                                    String Thumb = thumbs.get(i);
-                                                    String Desc = desc.get(i);
-                                                    String Channel = channel.get(i);
-                                                    String Metadata =  datayt.get(i);
+                                                    int i = 0;
+                                                    for(String Title : separador) {
+                                                        String Thumb = "";
+                                                        String Desc = "";
+                                                        String Channel = "";
+                                                        String Metadata = "";
+                                                        try{
+                                                            Thumb = thumbs.get(i);
+                                                        } catch (Exception e ){
+
+                                                        }
+                                                        try{
+                                                            Desc = desc.get(i);
+                                                        } catch (Exception e ){
+
+                                                        }
+                                                        try{
+                                                            Channel = channel.get(i);
+                                                        } catch (Exception e ){
+
+                                                        }
+                                                        try{
+                                                            Metadata =  datayt.get(i);
+                                                        } catch (Exception e ){
+
+                                                        }
+
 
                                                     if (!Title.equals("")) {
                                                         adapter.add(new CardModel(Thumb, Title, Desc,Channel,Metadata));
                                                     }
                                                     i++;
                                                 }
+                                                    lvCards.setAdapter(adapter);
+                                                    verificador = false;
                                                 } catch(Exception e){
                                                     e.printStackTrace();
-                                                }
-
-                                                try {
-                                                    separador.clear();
-                                                    thumbs.clear();
-                                                    desc.clear();
-                                                    channel.clear();
-                                                    datayt.clear();
-                                                } catch (Exception e){
-                                                    StringWriter errors = new StringWriter();
-                                                    e.printStackTrace(new PrintWriter(errors));
-                                                    Log.d("MyApp",errors.toString());
                                                 }
 
 
@@ -299,4 +308,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    public void setAdapter() {
+        adapter = new CardsAdapter(this);
+    }
 }
+

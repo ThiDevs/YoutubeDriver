@@ -1,6 +1,8 @@
 package com.ThiagoAlves;
 
 import android.app.Activity;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -51,11 +54,12 @@ public class MainActivity extends AppCompatActivity {
     Boolean verificador = false;
 
     CardsAdapter adapter;
-    ListView listView;
-
+    Search Pesquisa;
     ListView lvCards;
     int itemPosition;
     private InterstitialAd mInterstitialAd;
+    Boolean switchState;
+    Switch switch1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
         MobileAds.initialize(this, "ca-app-pub-4653575622321119~5903741568");
 
         AdView adView = findViewById(R.id.adView);
+        switch1 = findViewById(R.id.switch1);
+
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
-
-        Search Pesquisa = new Search("Raplord");
-
+        setABC();
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-4653575622321119/5751149581");
@@ -138,39 +142,41 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                switchState = switch1.isChecked();
+                if (!switchState) {
+                    Log.e("Teclas", s.toString());
+                    msg = s.toString();
+                    t = new Thread(new Runnable() {
+                        public void run() {
+                            try {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ip = IP.getText().toString();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                soc = new Socket(ip, 7878);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                writer = new PrintWriter(soc.getOutputStream());
+                                writer.write(msg);
+                                writer.flush();
+                                writer.close();
+                                soc.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
 
-                Log.e("Teclas", s.toString());
-                msg = s.toString();
-                t = new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ip = IP.getText().toString();
-                                }
-                            });
-                        }   catch(Exception e){
-                            e.printStackTrace();
-                        }
-                        try {
-                            soc = new Socket(ip, 7878);
-                        } catch(Exception e){
-                            e.printStackTrace();
-                        }
-                        try{
-                            writer = new PrintWriter(soc.getOutputStream());
-                            writer.write(msg);
-                            writer.flush();
-                            writer.close();
-                            soc.close();
-                        } catch(Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
                 t.start();
-
+                }
             }
         });
 
@@ -179,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
+
+
+
                 Thread OK = new Thread(new Runnable() {
                     public void run() {
                         try{ t.sleep(1000);}catch (Exception e){}
@@ -302,7 +312,91 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }});
 
-                OK.start();
+
+                switchState = switch1.isChecked();
+                if (switchState){
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                setAdapter();
+                                lvCards.setAdapter(null);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    Log.d("youtube",Text.getText().toString());
+                    Pesquisa = new Search(Text.getText().toString());
+                    Thread t1 = new Thread(Pesquisa);
+                    t1.start();
+
+                    try {
+                        t1.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    separador = Pesquisa.getLista();
+
+                    thumbs = Pesquisa.getThumb();
+                    desc = Pesquisa.getDesc();
+                    channel = Pesquisa.getChannel();
+                    datayt = Pesquisa.getDatayt();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                int i = 0;
+                                for(String Title : separador) {
+                                    String Thumb = "";
+                                    String Desc = "";
+                                    String Channel = "";
+                                    String Metadata = "";
+                                    try{
+                                        Thumb = thumbs.get(i);
+                                    } catch (Exception e ){
+
+                                    }
+                                    try{
+                                        Desc = desc.get(i);
+                                    } catch (Exception e ){
+
+                                    }
+                                    try{
+                                        Channel = channel.get(i);
+                                    } catch (Exception e ){
+
+                                    }
+                                    try{
+                                        Metadata =  datayt.get(i);
+                                    } catch (Exception e ){
+
+                                    }
+
+                                    if (!Title.equals("")) {
+                                        adapter.add(new CardModel(Thumb, Title, Desc,Channel,Metadata));
+                                    }
+                                    i++;
+                                }
+                                lvCards.setAdapter(adapter);
+                            } catch(Exception e){
+                                e.printStackTrace();
+                            }
+
+                        }});
+
+
+
+
+
+                } else {
+                    OK.start();
+                }
+
 
 
 
@@ -314,6 +408,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void setAdapter() {
         adapter = new CardsAdapter(this);
+    }
+    static AssetManager resources;
+    public void setABC(){
+        this.resources = getAssets();
+    }
+
+    public static AssetManager getABC(){
+         return resources;
     }
 }
 
